@@ -24,7 +24,7 @@ KindPHP is a lightweight PHP framework.
 	URL: http://www.app.com/post/view/recent/2001
 	Mapping: PostAction->view('recent', 2001)
 
-## layout
+## Layout
 
 	lib/
 		KindPHP.php

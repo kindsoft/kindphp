@@ -10,10 +10,19 @@ class KindPHP {
 	);
 
 	public function __construct($config) {
+		$this->defaultConfig['appName'] = substr(strrchr(APP_PATH, '/'), 1);
+		$appUrl = dirname($_SERVER['SCRIPT_NAME']);
+		$this->defaultConfig['staticUrl'] = substr($appUrl, 0, strripos($appUrl, '/')) . '/static';
+
 		$this->config = array_merge($this->defaultConfig, $config);
 		if ($this->config['debugMode']) {
 			error_reporting(E_ALL);
 		}
+
+		define('ACTION_PATH', APP_PATH . '/action');
+		define('VIEW_PATH', APP_PATH . '/view');
+		define('STATIC_URL', $this->config['staticUrl']);
+
 		$this->load();
 	}
 
@@ -38,7 +47,7 @@ class KindPHP {
 			$controllerName = $this->config['defaultController'];
 		}
 
-		$controllerPath = APP_PATH . '/action/' . $controllerName . '.action.php';
+		$controllerPath = ACTION_PATH . '/' . $controllerName . '.action.php';
 
 		if (!file_exists($controllerPath)) {
 			$this->notFound('Cannot find the file. Path: ' . $controllerPath);
@@ -56,7 +65,30 @@ class KindPHP {
 		}
 		$object->controllerName = $controllerName;
 		$object->defaultView = $this->config['defaultView'];
-		$object->$actionName($actionParams);
+
+		switch (count($actionParams)) {
+			case 0:
+				$object->$actionName();
+				break;
+			case 1:
+				$object->$actionName($actionParams[0]);
+				break;
+			case 2:
+				$object->$actionName($actionParams[0], $actionParams[1]);
+				break;
+			case 3:
+				$object->$actionName($actionParams[0], $actionParams[1], $actionParams[2]);
+				break;
+			case 4:
+				$object->$actionName($actionParams[0], $actionParams[1], $actionParams[2], $actionParams[3]);
+				break;
+			case 5:
+				$object->$actionName($actionParams[0], $actionParams[1], $actionParams[2], $actionParams[3], $actionParams[4]);
+				break;
+			default:
+				$object->$actionName($actionParams);
+				break;
+		}
 	}
 
 	public function notFound($message) {
@@ -81,10 +113,8 @@ class KindPHP {
 class Action {
 
 	public function render($data = array(), $viewName = null) {
-		$viewName = $viewName == null ? $this->defaultView : $viewName;
-		$viewPath = APP_PATH . '/view/' . $this->controllerName . '/' . $viewName . '.view.php';
 		extract($data);
-		include_once $viewPath;
+		include_once VIEW_PATH . '/' . $this->controllerName . '/' . ($viewName == null ? $this->defaultView : $viewName) . '.view.php';
 	}
 
 }

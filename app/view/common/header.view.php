@@ -5,7 +5,7 @@
 		<title><?php echo $pageTitle; ?></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
-		<?php require_once VIEW_PATH . '/common/include-css.view.php'; ?>
+		<?php require_once VIEW_PATH . '/common/css.view.php'; ?>
 	</head>
 
 	<body>

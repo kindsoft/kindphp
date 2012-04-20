@@ -35,6 +35,6 @@
 
 </div> <!-- /container -->
 
-<?php require_once VIEW_PATH . '/common/include-js.view.php'; ?>
+<?php require_once VIEW_PATH . '/common/js.view.php'; ?>
 
 <?php require_once VIEW_PATH . '/common/footer.view.php'; ?>

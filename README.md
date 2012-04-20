@@ -4,16 +4,25 @@ KindPHP
 
 KindPHP is a lightweight PHP framework.
 
-## URL
+## Features
 
-	Call IndexAction::index at action/index.action.php, The first parameter is 100.
-	http://www.app.com/100
+* Simple and quick.
+* Includes Frontend framework.
+* No cache or configure files.
 
-	Call MemberAction::index at action/member.action.php, The first parameter is 100.
-	http://www.app.com/member/100
+## URL Routing
 
-	Call MemberAction::edit at action/member.action.php, The first parameter is 100.
-	http://www.app.com/member/edit/100
+	URL: http://www.app.com/100
+	Mapping: IndexAction->index(100)
+
+	URL: http://www.app.com/member/100/2
+	Mapping: MemberAction->index(100, 2)
+
+	URL: http://www.app.com/member/edit/100
+	Mapping: MemberAction->edit(100)
+
+	URL: http://www.app.com/post/view/recent/2001
+	Mapping: PostAction->view('recent', 2001)
 
 ## layout
 
@@ -30,6 +39,13 @@ KindPHP is a lightweight PHP framework.
 		.htaccess
 		index.php
 	static/
-		css
-		img
-		js
+		bootstrap/
+			css/
+			img/
+			js/
+		jquery/
+			jquery.min.js
+		app/
+			css/
+			img/
+			js/

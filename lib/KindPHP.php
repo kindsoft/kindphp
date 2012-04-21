@@ -3,10 +3,11 @@
 class KindPHP {
 
 	public $defaultConfig = array(
-		'debugMode' => false,
+		'debugMode' => true,
 		'defaultController' => 'index',
 		'defaultAction' => 'index',
 		'defaultView' => 'index',
+		'paramPattern' => '/^\d+$/',
 	);
 
 	public function __construct($config) {
@@ -19,6 +20,10 @@ class KindPHP {
 			error_reporting(E_ALL);
 		}
 
+		if (strpos($_SERVER['REQUEST_URI'], '/index.php') !== false) {
+			$this->notFound('Cannot includes index.php in the request URL. URL: ' . $_SERVER['REQUEST_URI']);
+		}
+
 		define('ACTION_PATH', APP_PATH . '/action');
 		define('VIEW_PATH', APP_PATH . '/view');
 		define('STATIC_URL', $this->config['staticUrl']);
@@ -26,32 +31,35 @@ class KindPHP {
 		$this->load();
 	}
 
+	private function isParam($param) {
+		return $param !== '' && preg_match($this->config['paramPattern'], $param);
+	}
+
 	private function load() {
 		$pathInfo = trim($_SERVER['PATH_INFO'], '/');
-		$pathArray = $pathInfo !== '' ? explode('/', $pathInfo) : array();
+		$params = $pathInfo !== '' ? explode('/', $pathInfo) : array();
 
-		$controllerName = isset($pathArray[0]) ? $pathArray[0] : $this->config['defaultController'];
-		$actionName = isset($pathArray[1]) ? $pathArray[1] : $this->config['defaultAction'];
-		$actionParams = isset($pathArray[2]) ? array_slice($pathArray, 2) : array();
+		$first = isset($params[0]) ? $params[0] : '';
+		$second = isset($params[1]) ? $params[1] : '';
+		$actionParams = isset($params[2]) ? array_slice($params, 2) : array();
 
-		if (isset($pathArray[0]) && is_numeric($pathArray[0]) || isset($pathArray[1]) && is_numeric($pathArray[1])) {
+		$controllerName = $first !== '' ? $first : $this->config['defaultController'];
+		$actionName = $second !== '' ? $second : $this->config['defaultAction'];
+
+		if ($this->isParam($first) || $this->isParam($second)) {
 			$actionName = $this->config['defaultAction'];
 		}
 
-		if (isset($pathArray[1]) && is_numeric($pathArray[1])) {
-			array_unshift($actionParams, $pathArray[1]);
+		if ($this->isParam($second)) {
+			array_unshift($actionParams, $second);
 		}
 
-		if (isset($pathArray[0]) && is_numeric($pathArray[0])) {
-			array_unshift($actionParams, $pathArray[0]);
+		if ($this->isParam($first)) {
+			array_unshift($actionParams, $first);
 			$controllerName = $this->config['defaultController'];
 		}
 
 		$controllerPath = ACTION_PATH . '/' . $controllerName . '.action.php';
-
-		if (!file_exists($controllerPath)) {
-			$this->notFound('Cannot find the file. Path: ' . $controllerPath);
-		}
 
 		include_once $controllerPath;
 

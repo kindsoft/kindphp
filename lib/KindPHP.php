@@ -20,7 +20,7 @@ class KindPHP {
 			error_reporting(E_ALL);
 		}
 
-		if (strpos($_SERVER['REQUEST_URI'], '/index.php') !== false) {
+		if (strpos($_SERVER['REQUEST_URI'] . '/', '/index.php/') !== false) {
 			$this->notFound('Cannot includes index.php in the request URL. URL: ' . $_SERVER['REQUEST_URI']);
 		}
 

@@ -13,7 +13,7 @@ KindPHP is a lightweight PHP framework.
 ## URL Routing
 
 	URL: http://www.app.com/100
-	Mapping: IndexAction->index(100)
+	Mapping: IndexController->index(100)
 
 	URL: http://www.app.com/member/100/2
 	Mapping: MemberAction->index(100, 2)

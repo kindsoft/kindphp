@@ -29,8 +29,8 @@ KindPHP is a lightweight PHP framework.
 	lib/
 		KindPHP.php
 	app/
-		action/
-			index.action.php
+		controller/
+			index.php
 		view/
 			index/
 				index.view.php
@@ -45,6 +45,8 @@ KindPHP is a lightweight PHP framework.
 			js/
 		jquery/
 			jquery.min.js
+		seajs/
+			seajs.js
 		app/
 			css/
 			img/

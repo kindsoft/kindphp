@@ -16,13 +16,13 @@ KindPHP is a lightweight PHP framework.
 	Mapping: IndexController->index(100)
 
 	URL: http://www.app.com/member/100/2
-	Mapping: MemberAction->index(100, 2)
+	Mapping: MemberController->index(100, 2)
 
 	URL: http://www.app.com/member/edit/100
-	Mapping: MemberAction->edit(100)
+	Mapping: MemberController->edit(100)
 
 	URL: http://www.app.com/post/view/recent/2001
-	Mapping: PostAction->view('recent', 2001)
+	Mapping: PostController->view('recent', 2001)
 
 ## Layout
 

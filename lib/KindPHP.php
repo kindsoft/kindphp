@@ -1,5 +1,6 @@
 <?php
 
+// main class
 class KindPHP {
 
 	public $defaultConfig = array(
@@ -24,7 +25,7 @@ class KindPHP {
 			$this->notFound('Cannot includes index.php in the request URL. URL: ' . $_SERVER['REQUEST_URI']);
 		}
 
-		define('ACTION_PATH', APP_PATH . '/action');
+		define('CONTROLLER_PATH', APP_PATH . '/controller');
 		define('VIEW_PATH', APP_PATH . '/view');
 		define('STATIC_URL', $this->config['staticUrl']);
 
@@ -59,17 +60,17 @@ class KindPHP {
 			$controllerName = $this->config['defaultController'];
 		}
 
-		$controllerPath = ACTION_PATH . '/' . $controllerName . '.action.php';
+		$controllerPath = CONTROLLER_PATH . '/' . $controllerName . '.php';
 
 		include_once $controllerPath;
 
-		$className = self::toCamelName($controllerName) . 'Action';
+		$className = self::toCamelName($controllerName) . 'Controller';
 		if (!class_exists($className)) {
-			$this->notFound('Cannot find the class. Name: ' . $className);
+			$this->notFound('Cannot find the controller. Name: ' . $className);
 		}
 		$object = new $className();
 		if (!method_exists($object, $actionName)) {
-			$this->notFound('Cannot find the method. Name: ' . $actionName);
+			$this->notFound('Cannot find the action. Name: ' . $actionName);
 		}
 		$object->controllerName = $controllerName;
 		$object->defaultView = $this->config['defaultView'];
@@ -118,7 +119,8 @@ class KindPHP {
 
 }
 
-class Action {
+// controller class
+class Controller {
 
 	public function render($data = array(), $viewName = null) {
 		extract($data);

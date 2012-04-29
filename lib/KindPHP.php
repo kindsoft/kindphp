@@ -157,16 +157,16 @@ class Database {
 		}
 
 		$master = self::parseDSN($dsnMaster);
-		$this->dbhMaster = $this->connect($master);
+		$this->dbhMaster = self::connect($master);
 
 		$this->dbhSlave = null;
 		if ($dsnMaster !== $dsnSlave) {
 			$slave = self::parseDSN($dsnSlave);
-			$this->dbhSlave = $this->connect($slave);
+			$this->dbhSlave = self::connect($slave);
 		}
 	}
 
-	private function connect($dsn) {
+	private static function connect($dsn) {
 		try {
 			return new PDO($dsn['phptype'] . ':host=' . $dsn['hostspec'] . ';port=' . $dsn['port'] . ';dbname=' . $dsn['database'],
 				$dsn['username'], $dsn['password']);

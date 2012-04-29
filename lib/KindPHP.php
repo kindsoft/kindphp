@@ -26,12 +26,13 @@ class KindPHP {
 		$this->defaultConfig['staticUrl'] = substr($appUrl, 0, strripos($appUrl, '/')) . '/static';
 
 		$this->config = array_merge($this->defaultConfig, $config);
-		if ($this->config['debugMode']) {
-			error_reporting(E_ALL);
-		}
+
+		define('DEBUG_MODE', $this->config['debugMode']);
+
+		error_reporting(DEBUG_MODE ? E_ALL : 0);
 
 		if (strpos($_SERVER['REQUEST_URI'] . '/', '/index.php/') !== false) {
-			$this->notFound('Cannot includes index.php in the request URL. URL: ' . $_SERVER['REQUEST_URI']);
+			self::notFound('Cannot includes index.php in the request URL. URL: ' . $_SERVER['REQUEST_URI']);
 		}
 
 		define('CONTROLLER_PATH', APP_PATH . '/controller');
@@ -48,7 +49,7 @@ class KindPHP {
 	}
 
 	private function load() {
-		$pathInfo = trim($_SERVER['PATH_INFO'], '/');
+		$pathInfo = isset($_SERVER['PATH_INFO']) ? trim($_SERVER['PATH_INFO'], '/') : '';
 		$params = $pathInfo !== '' ? explode('/', $pathInfo) : array();
 
 		$first = isset($params[0]) ? $params[0] : '';
@@ -77,11 +78,11 @@ class KindPHP {
 
 		$className = self::toCamelName($controllerName) . 'Controller';
 		if (!class_exists($className)) {
-			$this->notFound('Cannot find the controller. Name: ' . $className);
+			self::notFound('Cannot find the controller: ' . $className);
 		}
 		$object = new $className();
 		if (!method_exists($object, $actionName)) {
-			$this->notFound('Cannot find the action. Name: ' . $actionName);
+			self::notFound('Cannot find the action: ' . $actionName);
 		}
 		$object->controllerName = $controllerName;
 		$object->defaultView = $this->config['defaultView'];
@@ -111,21 +112,25 @@ class KindPHP {
 		}
 	}
 
-	public function notFound($message) {
-		if ($this->config['debugMode']) {
+	public static function error($message, $httpMessage) {
+		if (DEBUG_MODE) {
 			throw new Exception($message);
 		} else {
-			header('HTTP/1.0 404 Not Found');
+			header('HTTP/1.0 ' . $httpMessage);
 			exit;
 		}
 	}
 
-	public static function toCamelName($str) {
-		$arr = explode('-', $str);
-		$arr = array_map(function($val) {
+	public static function notFound($message) {
+		self::error($message, '404 Not Found');
+	}
+
+	public static function toCamelName($string) {
+		$array = explode('-', $string);
+		$array = array_map(function($val) {
 			return ucwords($val);
-		}, $arr);
-		return implode('', $arr);
+		}, $array);
+		return implode('', $array);
 	}
 
 }
@@ -151,17 +156,22 @@ class Database {
 			$dsnSlave = DSN_SLAVE;
 		}
 
-		$needReplication = ($dsnMaster !== $dsnSlave);
-
 		$master = self::parseDSN($dsnMaster);
-		$this->dbhMaster = new PDO($master['phptype'] . ':host=' . $master['hostspec'] . ';port=' . $master['port'] . ';dbname=' . $master['database'],
-			$master['username'], $master['password']);
+		$this->dbhMaster = $this->connect($master);
 
 		$this->dbhSlave = null;
-		if ($needReplication) {
+		if ($dsnMaster !== $dsnSlave) {
 			$slave = self::parseDSN($dsnSlave);
-			$this->dbhSlave = new PDO($slave['phptype'] . ':host=' . $slave['hostspec'] . ';port=' . $slave['port'] . ';dbname=' . $slave['database'],
-				$slave['username'], $slave['password']);
+			$this->dbhSlave = $this->connect($slave);
+		}
+	}
+
+	private function connect($dsn) {
+		try {
+			return new PDO($dsn['phptype'] . ':host=' . $dsn['hostspec'] . ';port=' . $dsn['port'] . ';dbname=' . $dsn['database'],
+				$dsn['username'], $dsn['password']);
+		} catch (PDOException $e) {
+			self::error('Connection failed: ' . $e->getMessage());
 		}
 	}
 
@@ -283,6 +293,11 @@ class Database {
 
 		return $parsed;
 	}
+
+	public static function error($message) {
+		KindPHP::error($message, '500 Internal Server Error');
+	}
+
 }
 
 // model class

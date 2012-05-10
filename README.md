@@ -52,7 +52,7 @@ KindPHP is a lightweight PHP framework.
 			img/
 			js/
 
-## Database
+## Access database
 
 	// execute SQL
 	$mysql = new Database();
@@ -60,14 +60,14 @@ KindPHP is a lightweight PHP framework.
 	$sql = 'SELECT * FROM `member` LIMIT 10';
 	$data = $mysql->select($sql);
 
-	$sql = 'SELECT * FROM `member` WHERE `id`=1';
-	$memberRow = $mysql->row($sql);
+	$sql = 'SELECT * FROM `member` WHERE `id`=?';
+	$memberRow = $mysql->row($sql, array(1));
 
-	$sql = 'SELECT `name` FROM `member` WHERE `id`=1';
-	$name = $mysql->one($sql);
+	$sql = 'SELECT `name` FROM `member` WHERE `id`=?';
+	$name = $mysql->one($sql, array(1));
 
-	$sql = "INSERT INTO `member` (`name`, `regtime`) VALUES ('" . $mysql->escape($name) . "', NOW())";
-	$mysql->query($sql);
+	$sql = "INSERT INTO `member` (`name`, `regtime`) VALUES (?, NOW())";
+	$mysql->exec($sql, array('roddy'));
 
 	// use Model
 	$memberModel = Model('member');

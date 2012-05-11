@@ -54,6 +54,7 @@ KindPHP is a lightweight PHP framework.
 
 ## Access database
 
+```php
 	// execute SQL
 	$mysql = new Database();
 
@@ -88,3 +89,4 @@ KindPHP is a lightweight PHP framework.
 	$memberModel->where(array('id' => 1))->update(array(
 		'name' => $name,
 	);
+```

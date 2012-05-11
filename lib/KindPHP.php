@@ -117,7 +117,7 @@ class KindPHP {
 		}
 	}
 
-	public static function error($message, $httpMessage) {
+	public static function httpError($message, $httpMessage) {
 		if (DEBUG_MODE) {
 			throw new Exception($message);
 		} else {
@@ -127,7 +127,7 @@ class KindPHP {
 	}
 
 	public static function notFound($message) {
-		self::error($message, '404 Not Found');
+		self::httpError($message, '404 Not Found');
 	}
 
 	public static function toCamelName($string) {
@@ -157,6 +157,7 @@ class Controller {
 class Database {
 
 	public static $dbhMaster;
+
 	public static $dbhSlave;
 
 	// Creates a Database instance
@@ -181,16 +182,12 @@ class Database {
 	private static function connect($dsn) {
 		$dsnMap = self::parseDSN($dsn);
 
-		try {
-			return new PDO($dsnMap['scheme'] . ':host=' . $dsnMap['host'] . ';port=' . $dsnMap['port'] . ';dbname=' . $dsnMap['database'],
-				$dsnMap['username'], $dsnMap['password']);
-		} catch (PDOException $e) {
-			self::error('Connection failed: ' . $e->getMessage());
-		}
+		return new PDO($dsnMap['scheme'] . ':host=' . $dsnMap['host'] . ';port=' . $dsnMap['port'] . ';dbname=' . $dsnMap['database'],
+			$dsnMap['username'], $dsnMap['password']);
 	}
 
 	// Returns an array containing all of the result set rows
-	public function select($sql, $bindParams = array(), $useMaster = false) {
+	public function selectAll($sql, $bindParams = array(), $useMaster = false) {
 		if ($useMaster) {
 			$sth = self::$dbhMaster->prepare($sql);
 		} else {
@@ -203,7 +200,7 @@ class Database {
 	}
 
 	// Fetches the first row from a result set
-	public function row($sql, $bindParams = array(), $useMaster = false) {
+	public function selectRow($sql, $bindParams = array(), $useMaster = false) {
 		if ($useMaster) {
 			$sth = self::$dbhMaster->prepare($sql);
 		} else {
@@ -212,18 +209,20 @@ class Database {
 
 		$sth->execute($bindParams);
 
-		return $sth->fetch();
+		$result = $sth->fetch();
+
+		return $result ? $result : array();
 	}
 
 	// Fetches the first column of the first row from a result set
-	public function one($sql, $bindParams = array(), $useMaster = false) {
-		$row = $this->row($sql, $bindParams, $useMaster);
+	public function selectOne($sql, $bindParams = array(), $useMaster = false) {
+		$row = $this->selectRow($sql, $bindParams, $useMaster);
 
 		return isset($row[0]) ? $row[0] : null;
 	}
 
 	// Executes an SQL statement
-	public function exec($sql, $bindParams = array()) {
+	public function execute($sql, $bindParams = array()) {
 		$sth = self::$dbhMaster->prepare($sql);
 
 		return $sth->execute($bindParams);
@@ -243,29 +242,181 @@ class Database {
 		);
 	}
 
-	public static function error($message) {
-		KindPHP::error($message, '500 Internal Server Error');
-	}
-
 }
 
 
-class Module {
+class Model extends Database {
 
 	public $tableName;
-	public $limitNum;
+
+	public $whereSql;
+
+	public $orderSql;
+
+	public $limitSql;
+
+	public $bindParams = array();
 
 	public function __construct($tableName) {
 		$this->tableName = $tableName;
+
+		parent::__construct();
 	}
 
-	public function limit($limitNum) {
-		$this->limitNum = $limitNum;
+	public function where($map) {
+		$where = '';
+		foreach ($map as $key => $val) {
+			$where .= ' AND ' . $key . '=?';
+			$this->bindParams[] = $val;
+		}
+		$where = substr($where, 5);
+
+		$this->whereSql = 'WHERE ' . $where;
+
 		return $this;
 	}
 
-	public function select() {
-		$this->limitNum = $limitNum;
+	public function order($order) {
+		$this->orderSql = 'ORDER BY ' . $order;
+
+		return $this;
+	}
+
+	public function limit($limit) {
+		$this->limitSql = 'LIMIT ' . $limit;
+
+		return $this;
+	}
+
+	public function all($fields = array()) {
+		$sql = $this->makeSelectSql($fields);
+
+		$result = $this->selectAll($sql, $this->bindParams);
+
+		$this->resetSql();
+
+		return $result;
+	}
+
+	public function row($fields = array()) {
+		$sql = $this->makeSelectSql($fields);
+
+		$result = $this->selectRow($sql, $this->bindParams);
+
+		$this->resetSql();
+
+		return $result;
+	}
+
+	public function one($field) {
+		$sql = $this->makeSelectSql(array($field));
+
+		$result = $this->selectOne($sql, $this->bindParams);
+
+		$this->resetSql();
+
+		return $result;
+	}
+
+	public function count() {
+		return $this->one('COUNT(*)');
+	}
+
+	public function insert($map) {
+		$fields = array();
+		$values = array();
+		foreach ($map as $key => $val) {
+			if ($key{0} === '@') {
+				$fields[] = substr($key, 1);
+				$values[] = $val;
+			} else {
+				$fields[] = $key;
+				$values[] = '?';
+				$this->bindParams[] = $val;
+			}
+		}
+
+		$sql = 'INSERT INTO ' . $this->tableName . ' (' . implode(',', $fields) . ') VALUES (' . implode(',', $values) . ')';
+
+		$result = $this->execute($sql, $this->bindParams);
+
+		$this->resetSql();
+
+		return $result;
+	}
+
+	public function update($map) {
+		$set = '';
+		$bindParams = array();
+		foreach ($map as $key => $val) {
+			if ($key{0} === '@') {
+				$set .= ',' . substr($key, 1) . '=' . $val;
+			} else {
+				$set .= ',' . $key . '=?';
+				$bindParams[] = $val;
+			}
+		}
+		$set = substr($set, 1);
+		$bindParams = array_merge($bindParams, $this->bindParams);
+
+		$sql = 'UPDATE ' . $this->tableName . ' SET ' . $set;
+
+		if ($this->whereSql !== null) {
+			$sql .= ' ' . $this->whereSql;
+		}
+
+		$result = $this->execute($sql, $bindParams);
+
+		$this->resetSql();
+
+		return $result;
+	}
+
+	public function delete() {
+		$sql = 'DELETE FROM ' . $this->tableName;
+
+		if ($this->whereSql !== null) {
+			$sql .= ' ' . $this->whereSql;
+		}
+
+		$result = $this->execute($sql, $this->bindParams);
+
+		$this->resetSql();
+
+		return $result;
+	}
+
+	private function makeSelectSql($fields = array()) {
+		if (count($fields) > 0) {
+			$selectExpr = implode(',', $fields);
+		} else {
+			$selectExpr = '*';
+		}
+
+		$sql = 'SELECT ' . $selectExpr . ' FROM ' . $this->tableName;
+
+		if ($this->whereSql !== null) {
+			$sql .= ' ' . $this->whereSql;
+		}
+
+		if ($this->orderSql !== null) {
+			$sql .= ' ' . $this->orderSql;
+		}
+
+		if ($this->limitSql !== null) {
+			$sql .= ' ' . $this->limitSql;
+		}
+		return $sql;
+	}
+
+	private function resetSql() {
+		$this->whereSql = null;
+
+		$this->orderSql = null;
+
+		$this->limitSql = null;
+
+		$this->bindParams = array();
 	}
 
 }

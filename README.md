@@ -58,13 +58,13 @@ KindPHP is a lightweight PHP framework.
 	$mysql = new Database();
 
 	$sql = 'SELECT * FROM `member` LIMIT 10';
-	$data = $mysql->select($sql);
+	$data = $mysql->selectAll($sql);
 
 	$sql = 'SELECT * FROM `member` WHERE `id`=?';
-	$memberRow = $mysql->row($sql, array(1));
+	$memberRow = $mysql->selectRow($sql, array(1));
 
 	$sql = 'SELECT `name` FROM `member` WHERE `id`=?';
-	$name = $mysql->one($sql, array(1));
+	$name = $mysql->selectOne($sql, array(1));
 
 	$sql = "INSERT INTO `member` (`name`, `regtime`) VALUES (?, NOW())";
 	$mysql->exec($sql, array('roddy'));
@@ -72,15 +72,17 @@ KindPHP is a lightweight PHP framework.
 	// use Model
 	$memberModel = Model('member');
 
-	$data = $memberModel->limit(10)->select();
+	$data = $memberModel->limit(10)->all();
 
 	$memberRow = $memberModel->where(array('id' => 1))->row();
 
 	$name = $memberModel->where(array('id' => 1))->one('name');
 
+	$count = $memberModel->count();
+
 	$memberModel->insert(array(
 		'name' => $name,
-		'regtime:function' => 'NOW()',
+		'@regtime' => 'NOW()',
 	));
 
 	$memberModel->where(array('id' => 1))->update(array(

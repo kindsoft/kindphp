@@ -2,13 +2,7 @@
 
 require_once dirname(__FILE__) . '/simpletest/autorun.php';
 require_once dirname(__FILE__) .  '/../lib/KindPHP.php';
-
-/*
-CREATE DATABASE `test`;
-*/
-
-define('DSN_MASTER', 'mysql://root:1234@localhost/test');
-define('DSN_SLAVE', 'mysql://root:1234@localhost/test');
+require_once dirname(__FILE__) . '/config.php';
 
 class TestOfDatabase extends UnitTestCase {
 

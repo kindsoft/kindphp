@@ -2,20 +2,7 @@
 
 require_once dirname(__FILE__) . '/simpletest/autorun.php';
 require_once dirname(__FILE__) .  '/../lib/KindPHP.php';
-
-/*
-CREATE DATABASE test;
-
-CREATE TABLE IF NOT EXISTS `member` (
-	`id` bigint(20) NOT NULL AUTO_INCREMENT,
-	`name` varchar(50) NOT NULL,
-	`regtime` datetime NOT NULL,
-	PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-*/
-
-define('DSN_MASTER', 'mysql://root:1234@localhost/test');
-define('DSN_SLAVE', 'mysql://root:1234@localhost/test');
+require_once dirname(__FILE__) . '/config.php';
 
 class TestOfModel extends UnitTestCase {
 

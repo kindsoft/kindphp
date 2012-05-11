@@ -8,7 +8,7 @@ KindPHP is a lightweight PHP framework.
 
 * Simple and quick.
 * Includes Frontend framework.
-* No cache or configure files.
+* No cache files or configure files.
 
 ## URL Routing
 
@@ -70,7 +70,7 @@ KindPHP is a lightweight PHP framework.
 	$mysql->exec($sql, array('roddy'));
 
 	// use Model
-	$memberModel = Model('member');
+	$memberModel = new Model('member');
 
 	$data = $memberModel->limit(10)->all();
 

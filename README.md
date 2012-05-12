@@ -54,37 +54,39 @@ KindPHP is a lightweight PHP framework.
 
 ## Access database
 
-	// execute SQL
-	$mysql = new Database();
+```php
+// execute SQL
+$mysql = new Database();
 
-	$sql = 'SELECT * FROM `member` LIMIT 10';
-	$data = $mysql->selectAll($sql);
+$sql = 'SELECT * FROM `member` LIMIT 10';
+$data = $mysql->selectAll($sql);
 
-	$sql = 'SELECT * FROM `member` WHERE `id`=?';
-	$memberRow = $mysql->selectRow($sql, array(1));
+$sql = 'SELECT * FROM `member` WHERE `id`=?';
+$memberRow = $mysql->selectRow($sql, array(1));
 
-	$sql = 'SELECT `name` FROM `member` WHERE `id`=?';
-	$name = $mysql->selectOne($sql, array(1));
+$sql = 'SELECT `name` FROM `member` WHERE `id`=?';
+$name = $mysql->selectOne($sql, array(1));
 
-	$sql = "INSERT INTO `member` (`name`, `regtime`) VALUES (?, NOW())";
-	$mysql->exec($sql, array('roddy'));
+$sql = "INSERT INTO `member` (`name`, `regtime`) VALUES (?, NOW())";
+$mysql->exec($sql, array('roddy'));
 
-	// use Model
-	$memberModel = new Model('member');
+// use Model
+$memberModel = new Model('member');
 
-	$data = $memberModel->limit(10)->all();
+$data = $memberModel->limit(10)->all();
 
-	$memberRow = $memberModel->where(array('id' => 1))->row();
+$memberRow = $memberModel->where(array('id' => 1))->row();
 
-	$name = $memberModel->where(array('id' => 1))->one('name');
+$name = $memberModel->where(array('id' => 1))->one('name');
 
-	$count = $memberModel->count();
+$count = $memberModel->count();
 
-	$memberModel->insert(array(
-		'name' => $name,
-		'@regtime' => 'NOW()',
-	));
+$memberModel->insert(array(
+	'name' => $name,
+	'@regtime' => 'NOW()',
+));
 
-	$memberModel->where(array('id' => 1))->update(array(
-		'name' => $name,
-	);
+$memberModel->where(array('id' => 1))->update(array(
+	'name' => $name,
+);
+```

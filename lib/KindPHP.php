@@ -160,30 +160,32 @@ class Database {
 
 	public static $dbhSlave;
 
-	// Creates a Database instance
 	public function __construct() {
+		$this->connect();
+	}
+
+	// Connect to database
+	public function connect() {
 		$dsnMaster = DSN_MASTER;
 		$dsnSlave = DSN_SLAVE;
 
 		if (!self::$dbhMaster) {
-			self::$dbhMaster = self::connect($dsnMaster);
+			self::$dbhMaster = self::createInstance($dsnMaster);
 		}
 
 		if (!self::$dbhSlave) {
 			if ($dsnMaster === $dsnSlave) {
 				self::$dbhSlave = self::$dbhMaster;
 			} else {
-				self::$dbhSlave = self::connect($dsnSlave);
+				self::$dbhSlave = self::createInstance($dsnSlave);
 			}
 		}
 	}
 
-	// Connect to a database
-	private static function connect($dsn) {
-		$dsnMap = self::parseDSN($dsn);
-
-		return new PDO($dsnMap['scheme'] . ':host=' . $dsnMap['host'] . ';port=' . $dsnMap['port'] . ';dbname=' . $dsnMap['database'],
-			$dsnMap['username'], $dsnMap['password']);
+	// Close database connection
+	public function close() {
+		self::$dbhMaster = null;
+		self::$dbhSlave = null;
 	}
 
 	// Returns an array containing all of the result set rows
@@ -229,7 +231,7 @@ class Database {
 	}
 
 	// Parses DSN string, mysql://username:passwd@localhost:3306/DbName
-	public static function parseDSN($dsn) {
+	private static function parseDSN($dsn) {
 		$info = parse_url($dsn);
 
 		return array(
@@ -242,6 +244,12 @@ class Database {
 		);
 	}
 
+	private static function createInstance($dsn) {
+		$dsnMap = self::parseDSN($dsn);
+
+		return new PDO($dsnMap['scheme'] . ':host=' . $dsnMap['host'] . ';port=' . $dsnMap['port'] . ';dbname=' . $dsnMap['database'],
+			$dsnMap['username'], $dsnMap['password']);
+	}
 }
 
 

@@ -21,6 +21,7 @@ class KindPHP {
 		'paramPattern' => '/^\d+$/',
 		'dsnMaster' => '',
 		'dsnSlave' => '',
+		'staticTime' => '20120516',
 	);
 
 	public function __construct($config) {
@@ -41,6 +42,7 @@ class KindPHP {
 		}
 
 		define('STATIC_URL', $this->config['staticUrl']);
+		define('STATIC_TIME', $this->config['staticTime']);
 		define('DSN_MASTER', $this->config['dsnMaster']);
 		define('DSN_SLAVE', $this->config['dsnSlave']);
 
@@ -138,6 +140,16 @@ class KindPHP {
 		}, $array);
 
 		return implode('', $array);
+	}
+
+	public static function css($path) {
+		// TODO
+		echo '<link href="' . STATIC_URL . $path . '?t=' . STATIC_TIME . '.css" rel="stylesheet">' . "\n";
+	}
+
+	public static function js($path) {
+		// TODO
+		echo '<script src="' . STATIC_URL . $path . '?t=' . STATIC_TIME . '.js"></script>' . "\n";
 	}
 
 }

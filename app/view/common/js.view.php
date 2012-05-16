@@ -1,8 +1,8 @@
 <!--[if lt IE 9]>
-<script src="<?php echo STATIC_URL; ?>/bootstrap/js/html5.js"></script>
+<?php KindPHP::js('/bootstrap/js/html5.js'); ?>
 <![endif]-->
-<script src="<?php echo STATIC_URL; ?>/jquery/jquery.min.js"></script>
+<?php KindPHP::js('/jquery/jquery.min.js'); ?>
 <!--[if IE 6]>
-<script src="<?php echo STATIC_URL; ?>/bootstrap/js/ie6.js"></script>
+<?php KindPHP::js('/bootstrap/js/ie6.js'); ?>
 <![endif]-->
-<script src="<?php echo STATIC_URL; ?>/bootstrap/js/bootstrap.min.js"></script>
+<?php KindPHP::js('/bootstrap/js/bootstrap.min.js'); ?>

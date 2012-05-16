@@ -8,8 +8,9 @@
 * @version 1.0
 *******************************************************************************/
 
-define('CONTROLLER_PATH', APP_PATH . '/controller');
-define('VIEW_PATH', APP_PATH . '/view');
+define('DS', DIRECTORY_SEPARATOR);
+define('CONTROLLER_PATH', APP_PATH . DS .'controller');
+define('VIEW_PATH', APP_PATH . DS . 'view');
 
 class KindPHP {
 
@@ -25,11 +26,18 @@ class KindPHP {
 	);
 
 	public function __construct($config) {
-		$this->defaultConfig['appName'] = substr(strrchr(APP_PATH, '/'), 1);
 
-		$appUrl = dirname($_SERVER['SCRIPT_NAME']);
+		$appName = substr(strrchr(APP_PATH, DS), 1);
 
-		$this->defaultConfig['staticUrl'] = substr($appUrl, 0, strripos($appUrl, '/')) . '/static';
+		$scriptName = dirname($_SERVER['SCRIPT_NAME']);
+
+		$rootUrl = substr($scriptName, 0, strripos($scriptName, '/'));
+
+		$this->defaultConfig['appName'] = $appName;
+
+		$this->defaultConfig['appUrl'] = $rootUrl . '/' . $appName;
+
+		$this->defaultConfig['staticUrl'] = $rootUrl . '/static';
 
 		$this->config = array_merge($this->defaultConfig, $config);
 
@@ -41,6 +49,7 @@ class KindPHP {
 			self::notFound('Cannot includes index.php in the request URL. URL: ' . $_SERVER['REQUEST_URI']);
 		}
 
+		define('APP_URL', $this->config['appUrl']);
 		define('STATIC_URL', $this->config['staticUrl']);
 		define('STATIC_TIME', $this->config['staticTime']);
 		define('DSN_MASTER', $this->config['dsnMaster']);
@@ -77,7 +86,7 @@ class KindPHP {
 			$controllerName = $this->config['defaultController'];
 		}
 
-		$controllerPath = CONTROLLER_PATH . '/' . $controllerName . '.php';
+		$controllerPath = CONTROLLER_PATH . DS . $controllerName . '.php';
 
 		include_once $controllerPath;
 
@@ -142,6 +151,10 @@ class KindPHP {
 		return implode('', $array);
 	}
 
+	public static function url($path) {
+		echo APP_URL . $path;
+	}
+
 	public static function css($path) {
 		// TODO
 		echo '<link href="' . STATIC_URL . $path . '?t=' . STATIC_TIME . '.css" rel="stylesheet">' . "\n";
@@ -160,7 +173,7 @@ class Controller {
 	public function render($data = array(), $viewName = null) {
 		extract($data);
 
-		include_once VIEW_PATH . '/' . $this->controllerName . '/' . ($viewName == null ? $this->defaultView : $viewName) . '.view.php';
+		include_once VIEW_PATH . DS . $this->controllerName . DS . ($viewName == null ? $this->defaultView : $viewName) . '.view.php';
 	}
 
 }

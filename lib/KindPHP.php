@@ -151,18 +151,87 @@ class KindPHP {
 		return implode('', $array);
 	}
 
+	// Print absolute URL
 	public static function url($path) {
 		echo APP_URL . $path;
 	}
 
+	// Print link tag
 	public static function css($path) {
 		// TODO
 		echo '<link href="' . STATIC_URL . $path . '?t=' . STATIC_TIME . '.css" rel="stylesheet">' . "\n";
 	}
 
+	// Print script tag
 	public static function js($path) {
 		// TODO
 		echo '<script src="' . STATIC_URL . $path . '?t=' . STATIC_TIME . '.js"></script>' . "\n";
+	}
+
+	// Send GET request
+	public static function get($url) {
+		if (DEBUG_MODE) {
+			error_log('GET: ' . $url);
+		}
+
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+		$result = curl_exec($ch);
+
+		if ($result === false) {
+			$error = curl_error($ch);
+			curl_close($ch);
+			error_log('GET: ' . $url . ', ERROR: ' . $error);
+			return false;
+		}
+
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($httpCode != 200) {
+			curl_close($ch);
+			error_log('GET: ' . $url . ', ERROR: ' . $result);
+			return false;
+		}
+
+		curl_close($ch);
+
+		return $result;
+	}
+
+	// Send POST request
+	public static function post($url, $data = array()) {
+		if (DEBUG_MODE) {
+			error_log('POST: ' . $url);
+		}
+
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+		$result = curl_exec($ch);
+
+		if ($result === false) {
+			$error = curl_error($ch);
+			curl_close($ch);
+			error_log('POST: ' . $url . ', ERROR: ' . $error);
+			return false;
+		}
+
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($httpCode != 200) {
+			curl_close($ch);
+			error_log('POST: ' . $url . ', ERROR: ' . $result);
+			return false;
+		}
+
+		curl_close($ch);
+
+		return $result;
 	}
 
 }
@@ -195,6 +264,9 @@ class Database {
 		$dsnSlave = DSN_SLAVE;
 
 		if (!self::$dbhMaster) {
+			if (DEBUG_MODE) {
+				error_log('Connect master database. DSN: ' . $dsnMaster);
+			}
 			self::$dbhMaster = self::createInstance($dsnMaster);
 		}
 
@@ -202,6 +274,9 @@ class Database {
 			if ($dsnMaster === $dsnSlave) {
 				self::$dbhSlave = self::$dbhMaster;
 			} else {
+				if (DEBUG_MODE) {
+					error_log('Connect slave database. DSN: ' . $dsnSlave);
+				}
 				self::$dbhSlave = self::createInstance($dsnSlave);
 			}
 		}
@@ -215,6 +290,10 @@ class Database {
 
 	// Returns an array containing all of the result set rows
 	public function selectAll($sql, $bindParams = array(), $useMaster = false) {
+		if (DEBUG_MODE) {
+			error_log('SQL: ' . $sql . ' PARAMS: (' . implode(',', $bindParams) . '), MASTER: ' . ($useMaster ? 'true' : 'false'));
+		}
+
 		if ($useMaster) {
 			$sth = self::$dbhMaster->prepare($sql);
 		} else {
@@ -228,6 +307,10 @@ class Database {
 
 	// Fetches the first row from a result set
 	public function selectRow($sql, $bindParams = array(), $useMaster = false) {
+		if (DEBUG_MODE) {
+			error_log('SQL: ' . $sql . ' PARAMS: (' . implode(',', $bindParams) . '), MASTER: ' . ($useMaster ? 'true' : 'false'));
+		}
+
 		if ($useMaster) {
 			$sth = self::$dbhMaster->prepare($sql);
 		} else {
@@ -250,6 +333,10 @@ class Database {
 
 	// Executes an SQL statement
 	public function execute($sql, $bindParams = array()) {
+		if (DEBUG_MODE) {
+			error_log('SQL: ' . $sql . ' PARAMS: (' . implode(',', $bindParams) . '), MASTER: true');
+		}
+
 		$sth = self::$dbhMaster->prepare($sql);
 
 		return $sth->execute($bindParams);

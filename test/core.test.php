@@ -47,4 +47,17 @@ class TestOfCore extends UnitTestCase {
 
 	}
 
+	function testHttpRequest() {
+		$result = KindPHP::get(TEST_APP_URL . '/test-app');
+		$this->assertEqual($result, 'IndexController::indexindex/index.view.php');
+
+		$result = KindPHP::get(TEST_APP_URL . '/test-app/index.php/index/index');
+		$this->assertFalse($result);
+
+		$result = KindPHP::post(TEST_APP_URL . '/test-app');
+		$this->assertEqual($result, 'IndexController::indexindex/index.view.php');
+
+		$result = KindPHP::post(TEST_APP_URL . '/test-app/notfound');
+		$this->assertFalse($result);
+	}
 }

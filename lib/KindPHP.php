@@ -16,6 +16,7 @@ class KindPHP {
 
 	public $defaultConfig = array(
 		'debugMode' => true,
+		'autoload' => array(),
 		'defaultController' => 'index',
 		'defaultAction' => 'index',
 		'defaultView' => 'index',
@@ -39,6 +40,8 @@ class KindPHP {
 
 		$this->defaultConfig['staticUrl'] = $rootUrl . '/static';
 
+		$this->defaultConfig['autoload'] = array(APP_PATH . '/lib/common.php');
+
 		$this->config = array_merge($this->defaultConfig, $config);
 
 		define('DEBUG_MODE', $this->config['debugMode']);
@@ -55,6 +58,14 @@ class KindPHP {
 		define('DSN_MASTER', $this->config['dsnMaster']);
 		define('DSN_SLAVE', $this->config['dsnSlave']);
 
+		// load PHP files
+		foreach ($this->config['autoload'] as $path) {
+			if (file_exists($path)) {
+				require_once $path;
+			}
+		}
+
+		// load controller
 		$this->load();
 	}
 
@@ -85,6 +96,9 @@ class KindPHP {
 			array_unshift($actionParams, $first);
 			$controllerName = $this->config['defaultController'];
 		}
+
+		define('CONTROLLER_NAME', $controllerName);
+		define('ACTION_NAME', $actionName);
 
 		$controllerPath = CONTROLLER_PATH . DS . $controllerName . '.php';
 

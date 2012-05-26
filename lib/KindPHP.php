@@ -119,29 +119,7 @@ class KindPHP {
 		$object->controllerName = $controllerName;
 		$object->defaultView = $this->config['defaultView'];
 
-		switch (count($actionParams)) {
-			case 0:
-				$object->$actionName();
-				break;
-			case 1:
-				$object->$actionName($actionParams[0]);
-				break;
-			case 2:
-				$object->$actionName($actionParams[0], $actionParams[1]);
-				break;
-			case 3:
-				$object->$actionName($actionParams[0], $actionParams[1], $actionParams[2]);
-				break;
-			case 4:
-				$object->$actionName($actionParams[0], $actionParams[1], $actionParams[2], $actionParams[3]);
-				break;
-			case 5:
-				$object->$actionName($actionParams[0], $actionParams[1], $actionParams[2], $actionParams[3], $actionParams[4]);
-				break;
-			default:
-				$object->$actionName($actionParams);
-				break;
-		}
+		call_user_func_array(array($object, $actionName), $actionParams);
 	}
 
 	public static function httpError($message, $httpMessage) {
@@ -174,13 +152,11 @@ class KindPHP {
 
 	// Print link tag
 	public static function css($path) {
-		// TODO
 		echo '<link href="' . STATIC_URL . $path . '?t=' . STATIC_TIME . '.css" rel="stylesheet">' . "\n";
 	}
 
 	// Print script tag
 	public static function js($path) {
-		// TODO
 		echo '<script src="' . STATIC_URL . $path . '?t=' . STATIC_TIME . '.js"></script>' . "\n";
 	}
 

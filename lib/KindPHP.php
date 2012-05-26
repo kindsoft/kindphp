@@ -9,8 +9,10 @@
 *******************************************************************************/
 
 define('DS', DIRECTORY_SEPARATOR);
+define('LIB_PATH', dirname(__FILE__));
 define('CONTROLLER_PATH', APP_PATH . DS .'controller');
 define('VIEW_PATH', APP_PATH . DS . 'view');
+define('MODULE_PATH', APP_PATH . DS . 'module');
 
 class KindPHP {
 

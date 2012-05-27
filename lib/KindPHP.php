@@ -42,7 +42,7 @@ class KindPHP {
 
 		$this->defaultConfig['staticUrl'] = $rootUrl . '/static';
 
-		$this->defaultConfig['autoload'] = array(APP_PATH . '/lib/common.php');
+		$this->defaultConfig['autoload'] = array(MODULE_PATH . '/common.php');
 
 		$this->config = array_merge($this->defaultConfig, $config);
 
@@ -59,13 +59,6 @@ class KindPHP {
 		define('STATIC_TIME', $this->config['staticTime']);
 		define('DSN_MASTER', $this->config['dsnMaster']);
 		define('DSN_SLAVE', $this->config['dsnSlave']);
-
-		// load PHP files
-		foreach ($this->config['autoload'] as $path) {
-			if (file_exists($path)) {
-				require_once $path;
-			}
-		}
 
 		// load controller
 		$this->load();
@@ -102,9 +95,15 @@ class KindPHP {
 		define('CONTROLLER_NAME', $controllerName);
 		define('ACTION_NAME', $actionName);
 
+		foreach ($this->config['autoload'] as $path) {
+			if (file_exists($path)) {
+				require_once $path;
+			}
+		}
+
 		$controllerPath = CONTROLLER_PATH . DS . $controllerName . '.php';
 
-		include_once $controllerPath;
+		require_once $controllerPath;
 
 		$className = self::toCamelName($controllerName) . 'Controller';
 		if (!class_exists($className)) {
@@ -145,6 +144,16 @@ class KindPHP {
 		return implode('', $array);
 	}
 
+	public static function redirect($path) {
+		$url = preg_match('/https?:\/\//i', $path) ? $path : APP_URL . $path;
+		if (headers_sent()) {
+			echo '<script>location.href="' . $url . '";</script>';
+		} else {
+			header("Location: " . $url);
+		}
+		exit;
+	}
+
 	// Print absolute URL
 	public static function url($path) {
 		echo APP_URL . $path;
@@ -168,7 +177,7 @@ class Controller {
 	public function render($data = array(), $viewName = null) {
 		extract($data);
 
-		include_once VIEW_PATH . DS . $this->controllerName . DS . ($viewName == null ? $this->defaultView : $viewName) . '.view.php';
+		require_once VIEW_PATH . DS . $this->controllerName . DS . ($viewName == null ? $this->defaultView : $viewName) . '.view.php';
 	}
 
 }

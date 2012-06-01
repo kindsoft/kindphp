@@ -48,6 +48,9 @@ class TestOfModel extends UnitTestCase {
 		$name = $memberModel->where(array('name' => 'roddy'))->one('name');
 		$this->assertEqual($name, 'roddy');
 
+		$data = $memberModel->where('name like ? AND regtime>=? AND regtime<=?', array('%ro%', '2012-01-01 00:00:00', date('Y-m-d H:i:s')))->order('name DESC')->limit('0,20')->all();
+		$this->assertEqual(count($data), 1);
+
 		// update
 		$result = $memberModel->where(array('name' => 'roddy'))->update(array(
 			'name' => 'roddy++',

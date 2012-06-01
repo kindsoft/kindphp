@@ -318,15 +318,23 @@ class Model extends Database {
 		parent::__construct();
 	}
 
-	public function where($map) {
-		$where = '';
-		foreach ($map as $key => $val) {
-			$where .= ' AND ' . $key . '=?';
-			$this->bindParams[] = $val;
+	public function where($map, $bindParams = array()) {
+		if (is_string($map)) {
+			$this->whereSql = 'WHERE ' . $map;
+			$this->bindParams = array_merge($this->bindParams, $bindParams);
+			return $this;
 		}
-		$where = substr($where, 5);
 
-		$this->whereSql = 'WHERE ' . $where;
+		if (count($map) > 0) {
+			$where = '';
+			foreach ($map as $key => $val) {
+				$where .= ' AND ' . $key . '=?';
+				$this->bindParams[] = $val;
+			}
+			$where = substr($where, 5);
+
+			$this->whereSql = 'WHERE ' . $where;
+		}
 
 		return $this;
 	}

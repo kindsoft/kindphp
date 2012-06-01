@@ -318,7 +318,13 @@ class Model extends Database {
 		parent::__construct();
 	}
 
-	public function where($map) {
+	public function where($map, $bindParams = array()) {
+		if (is_string($map)) {
+			$this->whereSql = 'WHERE ' . $map;
+			$this->bindParams = array_merge($this->bindParams, $bindParams);
+			return $this;
+		}
+
 		if (count($map) > 0) {
 			$where = '';
 			foreach ($map as $key => $val) {

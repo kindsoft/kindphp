@@ -77,6 +77,8 @@ $memberModel = new Model('member');
 
 $data = $memberModel->limit(10)->all();
 
+$data = $memberModel->where('name like %?% AND regtime>=?', array('ro', '2012-01-01 00:00:00'))->order('name DESC')->limit('0,20')->all();
+
 $memberRow = $memberModel->where(array('id' => 1))->row();
 
 $name = $memberModel->where(array('id' => 1))->one('name');

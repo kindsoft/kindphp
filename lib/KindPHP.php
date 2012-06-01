@@ -319,15 +319,16 @@ class Model extends Database {
 	}
 
 	public function where($map) {
-		$where = '';
-		foreach ($map as $key => $val) {
-			$where .= ' AND ' . $key . '=?';
-			$this->bindParams[] = $val;
+		if (count($map) > 0) {
+			$where = '';
+			foreach ($map as $key => $val) {
+				$where .= ' AND ' . $key . '=?';
+				$this->bindParams[] = $val;
+			}
+			$where = substr($where, 5);
+
+			$this->whereSql = 'WHERE ' . $where;
 		}
-		$where = substr($where, 5);
-
-		$this->whereSql = 'WHERE ' . $where;
-
 		return $this;
 	}
 
@@ -343,30 +344,30 @@ class Model extends Database {
 		return $this;
 	}
 
-	public function all($fields = array()) {
+	public function all($fields = array(), $useMaster = false) {
 		$sql = $this->makeSelectSql($fields);
 
-		$result = $this->selectAll($sql, $this->bindParams);
+		$result = $this->selectAll($sql, $this->bindParams, $useMaster);
 
 		$this->resetSql();
 
 		return $result;
 	}
 
-	public function row($fields = array()) {
+	public function row($fields = array(), $useMaster = false) {
 		$sql = $this->makeSelectSql($fields);
 
-		$result = $this->selectRow($sql, $this->bindParams);
+		$result = $this->selectRow($sql, $this->bindParams, $useMaster);
 
 		$this->resetSql();
 
 		return $result;
 	}
 
-	public function one($field) {
+	public function one($field, $useMaster = false) {
 		$sql = $this->makeSelectSql(array($field));
 
-		$result = $this->selectOne($sql, $this->bindParams);
+		$result = $this->selectOne($sql, $this->bindParams, $useMaster);
 
 		$this->resetSql();
 

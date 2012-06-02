@@ -48,8 +48,6 @@ class KindPHP {
 
 		define('DEBUG_MODE', $this->config['debugMode']);
 
-		error_reporting(DEBUG_MODE ? E_ALL : 0);
-
 		if (strpos($_SERVER['REQUEST_URI'] . '/', '/index.php/') !== false) {
 			self::notFound('Cannot includes index.php in the request URL. URL: ' . $_SERVER['REQUEST_URI']);
 		}
@@ -319,13 +317,13 @@ class Model extends Database {
 	}
 
 	public function where($map, $bindParams = array()) {
-		if (is_string($map)) {
+		if (is_string($map) && $map !== '') {
 			$this->whereSql = 'WHERE ' . $map;
 			$this->bindParams = array_merge($this->bindParams, $bindParams);
 			return $this;
 		}
 
-		if (count($map) > 0) {
+		if (is_array($map) && count($map) > 0) {
 			$where = '';
 			foreach ($map as $key => $val) {
 				$where .= ' AND ' . $key . '=?';

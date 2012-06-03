@@ -30,11 +30,21 @@ KindPHP is a lightweight PHP framework.
 	app/
 		controller/
 			index.php
+			member.php
+			post.php
 		view/
 			index/
 				index.view.php
-		lib/
+			post/
+				index.view.php
+				view.view.php
+			member/
+				index.view.php
+				edit.view.php
+		module/
 			common.php
+			member.module.php
+			post.module.php
 		.htaccess
 		index.php
 	static/

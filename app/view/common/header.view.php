@@ -5,7 +5,10 @@
 	<title><?php echo $pageTitle; ?></title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="">
-	<?php require_once VIEW_PATH . '/common/css.view.php'; ?>
+	<?php KindPHP::css('/bootstrap/css/bootstrap.min.css'); ?>
+	<!--[if IE 6]>
+	<?php KindPHP::css('/bootstrap/css/bootstrap-ie6.css'); ?>
+	<![endif]-->
 </head>
 
 <body>

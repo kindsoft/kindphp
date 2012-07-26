@@ -35,6 +35,6 @@
 
 </div> <!-- /container -->
 
-<?php require_once VIEW_PATH . '/common/js.view.php'; ?>
+<?php KindPHP::seajs('/app/js/index.js'); ?>
 
 <?php require_once VIEW_PATH . '/common/footer.view.php'; ?>

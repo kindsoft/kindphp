@@ -25,6 +25,7 @@ class KindPHP {
 		'paramPattern' => '/^\d+$/',
 		'dsnMaster' => '',
 		'dsnSlave' => '',
+		'staticTime' => '20120516',
 	);
 
 	public function __construct($config) {
@@ -53,6 +54,7 @@ class KindPHP {
 
 		define('APP_URL', $this->config['appUrl']);
 		define('STATIC_URL', $this->config['staticUrl']);
+		define('STATIC_TIME', $this->config['staticTime']);
 		define('DSN_MASTER', $this->config['dsnMaster']);
 		define('DSN_SLAVE', $this->config['dsnSlave']);
 
@@ -233,7 +235,7 @@ class Database {
 
 		$sth->execute($bindParams);
 
-		return $sth->fetchAll();
+		return $sth->fetchAll(PDO::FETCH_ASSOC);
 	}
 
 	// Fetches the first row from a result set
@@ -250,7 +252,7 @@ class Database {
 
 		$sth->execute($bindParams);
 
-		$result = $sth->fetch();
+		$result = $sth->fetch(PDO::FETCH_ASSOC);
 
 		return $result ? $result : array();
 	}
@@ -259,7 +261,9 @@ class Database {
 	public function selectOne($sql, $bindParams = array(), $useMaster = false) {
 		$row = $this->selectRow($sql, $bindParams, $useMaster);
 
-		return isset($row[0]) ? $row[0] : null;
+		$values = array_values($row);
+
+		return isset($values[0]) ? $values[0] : null;
 	}
 
 	// Executes an SQL statement
@@ -271,6 +275,11 @@ class Database {
 		$sth = self::$dbhMaster->prepare($sql);
 
 		return $sth->execute($bindParams);
+	}
+
+	// Returns the ID of the last inserted row or sequence value
+	public function lastInsertId($name = null) {
+		return self::$dbhMaster->lastInsertId($name);
 	}
 
 	// Parses DSN string, mysql://username:passwd@localhost:3306/DbName

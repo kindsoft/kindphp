@@ -2,7 +2,7 @@
 
 class IndexController extends Controller {
 
-	public function index($a, $b) {
+	public function index($a = '', $b = '') {
 		echo 'IndexController::index';
 		$this->render();
 		if ($a) {

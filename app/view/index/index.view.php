@@ -35,6 +35,8 @@
 
 </div> <!-- /container -->
 
-<?php KindPHP::seajs('/app/js/index.js'); ?>
+<script>
+	seajs.use('<?php echo STATIC_URL; ?>/app/js/index');
+</script>
 
 <?php require_once VIEW_PATH . '/common/footer.view.php'; ?>

@@ -9,6 +9,21 @@
 	<!--[if IE 6]>
 	<?php KindPHP::css('/bootstrap/css/bootstrap-ie6.css'); ?>
 	<![endif]-->
+	<?php KindPHP::js('/seajs/sea.js'); ?>
+	<script>
+		seajs.config({
+			alias: {
+				'pngfix' : '<?php echo STATIC_URL; ?>/bootstrap/js/DD_belatedPNG_0.0.8a-min.js',
+				'jquery' : '<?php echo STATIC_URL; ?>/jquery/jquery.min.js',
+				'bootstrap' : '<?php echo STATIC_URL; ?>/bootstrap/js/bootstrap.min.js'
+			},
+			preload: [
+				'jquery',
+				'bootstrap',
+				!!window.ActiveXObject && !window.XMLHttpRequest ? 'pngfix' : ''
+			]
+		});
+	</script>
 </head>
 
 <body>

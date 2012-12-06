@@ -165,32 +165,6 @@ class KindPHP {
 		echo '<script src="' . STATIC_URL . $path . '?t=' . STATIC_TIME . '.js"></script>' . "\n";
 	}
 
-	// Print script tag for SeaJS
-	public static function seajs($path) {
-
-		$staticUrl = STATIC_URL;
-		echo <<<END
-<script src="{$staticUrl}/seajs/sea.js"></script>
-<script>
-seajs.config({
-	alias: {
-		'html5' : '{$staticUrl}/bootstrap/js/html5.js',
-		'pngfix' : '{$staticUrl}/bootstrap/js/DD_belatedPNG_0.0.8a-min.js',
-		'jquery' : '{$staticUrl}/jquery/jquery.min.js',
-		'bootstrap' : '{$staticUrl}/bootstrap/js/bootstrap.min.js'
-	},
-	preload: [
-		Function.prototype.bind ? '' : 'html5',
-		'jquery',
-		'bootstrap',
-		!!window.ActiveXObject && !window.XMLHttpRequest ? 'pngfix' : ''
-	]
-});
-seajs.use('{$staticUrl}{$path}');
-</script>
-END;
-	}
-
 }
 
 

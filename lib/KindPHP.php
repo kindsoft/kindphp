@@ -244,7 +244,7 @@ class Database {
 	// Returns an array containing all of the result set rows
 	public function selectAll($sql, $bindParams = array(), $useMaster = false) {
 		if (DEBUG_MODE) {
-			error_log('SQL: ' . $sql . ' PARAMS: ("' . implode('","', $bindParams) . '"), MASTER: ' . ($useMaster ? 'true' : 'false'));
+			error_log('SQL: ' . $sql . '; PARAMS: ("' . implode('","', $bindParams) . '"); MASTER: ' . ($useMaster ? 'true' : 'false'));
 		}
 
 		if ($useMaster) {
@@ -261,7 +261,7 @@ class Database {
 	// Fetches the first row from a result set
 	public function selectRow($sql, $bindParams = array(), $useMaster = false) {
 		if (DEBUG_MODE) {
-			error_log('SQL: ' . $sql . ' PARAMS: ("' . implode('","', $bindParams) . '"), MASTER: ' . ($useMaster ? 'true' : 'false'));
+			error_log('SQL: ' . $sql . '; PARAMS: ("' . implode('","', $bindParams) . '"); MASTER: ' . ($useMaster ? 'true' : 'false'));
 		}
 
 		if ($useMaster) {
@@ -289,7 +289,7 @@ class Database {
 	// Executes an SQL statement
 	public function execute($sql, $bindParams = array()) {
 		if (DEBUG_MODE) {
-			error_log('SQL: ' . $sql . ' PARAMS: (' . implode(',', $bindParams) . '), MASTER: true');
+			error_log('SQL: ' . $sql . '; PARAMS: ("' . implode('","', $bindParams) . '"); MASTER: true');
 		}
 
 		$sth = self::$dbhMaster->prepare($sql);

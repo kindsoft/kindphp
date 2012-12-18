@@ -9,22 +9,38 @@
 *******************************************************************************/
 
 define('DS', DIRECTORY_SEPARATOR);
+
 define('LIB_PATH', dirname(__FILE__));
+
+if (!defined('APP_PATH')) {
+	define('APP_PATH', LIB_PATH);
+}
+
 define('CONTROLLER_PATH', APP_PATH . DS .'controller');
+
 define('VIEW_PATH', APP_PATH . DS . 'view');
+
 define('MODULE_PATH', APP_PATH . DS . 'module');
 
 class KindPHP {
 
 	public $defaultConfig = array(
 		'debugMode' => true,
+
 		'autoload' => array(),
+
 		'defaultController' => 'index',
+
 		'defaultAction' => 'index',
+
 		'defaultView' => 'index',
+
 		'paramPattern' => '/^\d+$/',
+
 		'dsnMaster' => '',
+
 		'dsnSlave' => '',
+
 		'staticTime' => '20120516',
 	);
 
@@ -53,9 +69,13 @@ class KindPHP {
 		}
 
 		define('APP_URL', $this->config['appUrl']);
+
 		define('STATIC_URL', $this->config['staticUrl']);
+
 		define('STATIC_TIME', $this->config['staticTime']);
+
 		define('DSN_MASTER', $this->config['dsnMaster']);
+
 		define('DSN_SLAVE', $this->config['dsnSlave']);
 
 		// load controller
@@ -224,7 +244,7 @@ class Database {
 	// Returns an array containing all of the result set rows
 	public function selectAll($sql, $bindParams = array(), $useMaster = false) {
 		if (DEBUG_MODE) {
-			error_log('SQL: ' . $sql . ' PARAMS: (' . implode(',', $bindParams) . '), MASTER: ' . ($useMaster ? 'true' : 'false'));
+			error_log('SQL: ' . $sql . ' PARAMS: ("' . implode('","', $bindParams) . '"), MASTER: ' . ($useMaster ? 'true' : 'false'));
 		}
 
 		if ($useMaster) {
@@ -241,7 +261,7 @@ class Database {
 	// Fetches the first row from a result set
 	public function selectRow($sql, $bindParams = array(), $useMaster = false) {
 		if (DEBUG_MODE) {
-			error_log('SQL: ' . $sql . ' PARAMS: (' . implode(',', $bindParams) . '), MASTER: ' . ($useMaster ? 'true' : 'false'));
+			error_log('SQL: ' . $sql . ' PARAMS: ("' . implode('","', $bindParams) . '"), MASTER: ' . ($useMaster ? 'true' : 'false'));
 		}
 
 		if ($useMaster) {

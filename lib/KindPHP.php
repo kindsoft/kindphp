@@ -122,15 +122,18 @@ class KindPHP {
 		$controllerPath = CONTROLLER_PATH . DS . $controllerName . '.php';
 
 		require_once $controllerPath;
+		if (!file_exists($controllerPath)) {
+			self::notFound('File not found: ' . $controllerPath);
+		}
 
 		$className = self::toCamelName($controllerName) . 'Controller';
 		if (!class_exists($className)) {
-			self::notFound('Cannot find the controller: ' . $className);
+			self::notFound('Controller not found: ' . $className);
 		}
 
 		$object = new $className();
 		if (!method_exists($object, $actionName)) {
-			self::notFound('Cannot find the action: ' . $actionName);
+			self::notFound('Action not found: ' . $actionName);
 		}
 
 		$object->controllerName = $controllerName;

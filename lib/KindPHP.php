@@ -356,7 +356,7 @@ class Model extends Database {
 		if (is_array($map) && count($map) > 0) {
 			$where = '';
 			foreach ($map as $key => $val) {
-				$where .= ' AND ' . $key . '=?';
+				$where .= ' AND `' . $key . '`=?';
 				$this->bindParams[] = $val;
 			}
 			$where = substr($where, 5);
@@ -426,7 +426,7 @@ class Model extends Database {
 			}
 		}
 
-		$sql = 'INSERT INTO ' . $this->tableName . ' (' . implode(',', $fields) . ') VALUES (' . implode(',', $values) . ')';
+		$sql = 'INSERT INTO `' . $this->tableName . '` (`' . implode('`,`', $fields) . '`) VALUES (' . implode(',', $values) . ')';
 
 		$result = $this->execute($sql, $this->bindParams);
 
@@ -440,16 +440,16 @@ class Model extends Database {
 		$bindParams = array();
 		foreach ($map as $key => $val) {
 			if ($key{0} === '@') {
-				$set .= ',' . substr($key, 1) . '=' . $val;
+				$set .= ',`' . substr($key, 1) . '`=' . $val;
 			} else {
-				$set .= ',' . $key . '=?';
+				$set .= ',`' . $key . '`=?';
 				$bindParams[] = $val;
 			}
 		}
 		$set = substr($set, 1);
 		$bindParams = array_merge($bindParams, $this->bindParams);
 
-		$sql = 'UPDATE ' . $this->tableName . ' SET ' . $set;
+		$sql = 'UPDATE `' . $this->tableName . '` SET ' . $set;
 
 		if ($this->whereSql !== null) {
 			$sql .= ' ' . $this->whereSql;
@@ -463,7 +463,7 @@ class Model extends Database {
 	}
 
 	public function delete() {
-		$sql = 'DELETE FROM ' . $this->tableName;
+		$sql = 'DELETE FROM `' . $this->tableName . '`';
 
 		if ($this->whereSql !== null) {
 			$sql .= ' ' . $this->whereSql;
@@ -483,7 +483,7 @@ class Model extends Database {
 			$selectExpr = '*';
 		}
 
-		$sql = 'SELECT ' . $selectExpr . ' FROM ' . $this->tableName;
+		$sql = 'SELECT ' . $selectExpr . ' FROM `' . $this->tableName . '`';
 
 		if ($this->whereSql !== null) {
 			$sql .= ' ' . $this->whereSql;

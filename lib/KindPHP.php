@@ -322,8 +322,14 @@ class Database {
 	private static function createInstance($dsn) {
 		$dsnMap = self::parseDSN($dsn);
 
-		return new PDO($dsnMap['scheme'] . ':host=' . $dsnMap['host'] . ';port=' . $dsnMap['port'] . ';dbname=' . $dsnMap['database'],
+		$dbh = new PDO($dsnMap['scheme'] . ':host=' . $dsnMap['host'] . ';port=' . $dsnMap['port'] . ';dbname=' . $dsnMap['database'],
 			$dsnMap['username'], $dsnMap['password']);
+
+		if (DEBUG_MODE) {
+			$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		}
+
+		return $dbh;
 	}
 }
 
